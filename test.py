@@ -4,6 +4,7 @@
 class Figure:
     screen = [['🙩']*8 for _ in range(8)]
     figures = []
+    turn = "White"
 
     def __init__(self, name, x, y, color):
         self.icon = "🙾"
@@ -34,6 +35,7 @@ class Figure:
             if type(self) == Pawn:
                 self.is_moved = True
             self.draw()
+            Figure.turn = "Black" if Figure.turn == "White" else "White"
         else:
             print(f"Невозможно переместить {self.name} в эту точку")
 
@@ -46,17 +48,6 @@ class Figure:
     @property
     def possible_paths(self):
         return [['1']*8 for _ in range(8)]
-
-    @staticmethod
-    def choose_figure(coord):
-        print(coord)
-        _ = Figure.check_for_figure(coord)
-        if _:
-            print(len(Figure.figures))
-            Figure.print(_.possible_paths)
-            return _
-        else:
-            return False
 
     @staticmethod
     def check_for_figure(coord):
@@ -78,6 +69,22 @@ class Figure:
         self.x, self.y = 8, 8
         print(len(Figure.figures))
 
+    @staticmethod
+    def play():
+        figure = Figure.check_for_figure(tuple(map(int, input("Выберите фигуру >> ").split())))
+        if figure:
+            if figure.color == Figure.turn:
+                if sum(sum(j == "0" for j in i) for i in figure.possible_paths) == 63:
+                    print("Этой фигуре некуда идти")
+                    return
+                Figure.print(figure.possible_paths)
+                figure.move(tuple(map(int, (input("Введите новые координаты >> ")).split())))
+            else:
+                print(f"Сейчас ход {Figure.turn}")
+            Figure.print_screen()
+        else:
+            print("there's no figure")
+
 
 class Pawn(Figure):
     def __init__(self, name, x, y, color):
@@ -95,7 +102,6 @@ class Pawn(Figure):
             t_x = self.x
             if t_y < 0 or t_y > 7 or t_x < 0 or t_x > 7:
                 return self.paths
-            print("paths", t_x, t_y)
             if_figure = Figure.check_for_figure((t_x, t_y))
             if if_figure:
                 print(if_figure)
@@ -135,8 +141,7 @@ for x_ in range(8):
 Figure.print_screen()
 
 while True:
-    Figure.choose_figure(tuple(map(int, input("Выберите фигуру >> ").split()))).move(tuple(map(int, (input("Введите новые координаты >> ")).split())))
-    Figure.print_screen()
+    Figure.play()
 # except:
 #     for _ in Figure.figures:
 #         print(_.x, _.y)
