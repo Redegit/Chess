@@ -24,7 +24,8 @@ class Figure:
 
     def move(self, coord):
         new_x, new_y = coord[0], coord[1]
-        if self.possible_paths[new_y][new_x] != "0":
+        path = self.possible_paths[new_y][new_x]
+        if path == "1" or path == "2":
             if self.possible_paths[new_y][new_x] == "2":
                 Figure.check_for_figure((new_x, new_y)).kill()
             Figure.screen[self.y][self.x] = "🙩"
@@ -92,6 +93,8 @@ class Pawn(Figure):
         for i in range(2 - self.is_moved):
             t_y = self.y-(1 + i)*direction
             t_x = self.x
+            if t_y < 0 or t_y > 7 or t_x < 0 or t_x > 7:
+                return self.paths
             print("paths", t_x, t_y)
             if_figure = Figure.check_for_figure((t_x, t_y))
             if if_figure:
@@ -130,10 +133,10 @@ for x_ in range(8):
 # print(Figure.figures[0].x)
 
 Figure.print_screen()
-try:
-    while True:
-        Figure.choose_figure(tuple(map(int, input("Выберите фигуру >> ").split()))).move(tuple(map(int, (input("Введите новые координаты >> ")).split())))
-        Figure.print_screen()
-except:
-    for _ in Figure.figures:
-        print(_.x, _.y)
+
+while True:
+    Figure.choose_figure(tuple(map(int, input("Выберите фигуру >> ").split()))).move(tuple(map(int, (input("Введите новые координаты >> ")).split())))
+    Figure.print_screen()
+# except:
+#     for _ in Figure.figures:
+#         print(_.x, _.y)
