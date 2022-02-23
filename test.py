@@ -24,7 +24,9 @@ class Figure:
 
     def move(self, coord):
         new_x, new_y = coord[0], coord[1]
-        if self.possible_paths[new_y][new_x] == "1":
+        if self.possible_paths[new_y][new_x] != "0":
+            if self.possible_paths[new_y][new_x] == "2":
+                Figure.check_for_figure((new_x, new_y)).kill()
             Figure.screen[self.y][self.x] = "🙩"
             print(f"Moving {self.color} {self.name} from {self.x, self.y} to {new_x, new_y}")
             self.x, self.y = new_x, new_y
@@ -47,19 +49,33 @@ class Figure:
     @staticmethod
     def choose_figure(coord):
         print(coord)
+        _ = Figure.check_for_figure(coord)
+        if _:
+            print(len(Figure.figures))
+            Figure.print(_.possible_paths)
+            return _
+        else:
+            return False
+
+    @staticmethod
+    def check_for_figure(coord):
         x, y = coord[0], coord[1]
         for _ in Figure.figures:
             if (x, y) == (_.x, _.y):
-                print(f"found {_}")
-                Figure.print(_.possible_paths)
                 return _
-        return print(f"no figure found {coord}")
+        return False
 
     @staticmethod
     def print(screen):
         for _ in range(8):
             print("  ".join(screen[_]))
         print()
+
+    def kill(self):
+        print(len(Figure.figures))
+        print(f"killing {self}")
+        self.x, self.y = 8, 8
+        print(len(Figure.figures))
 
 
 class Pawn(Figure):
@@ -73,9 +89,23 @@ class Pawn(Figure):
         self.paths = [['0'] * 8 for _ in range(8)]
         self.paths[self.y][self.x] = "P"
         direction = 1 if self.color == "White" else -1
-        self.paths[self.y-1*direction][self.x] = "1"
-        if not self.is_moved:
-            self.paths[self.y - 2*direction][self.x] = "1"
+        for i in range(2 - self.is_moved):
+            t_y = self.y-(1 + i)*direction
+            t_x = self.x
+            print("paths", t_x, t_y)
+            if_figure = Figure.check_for_figure((t_x, t_y))
+            if if_figure:
+                print(if_figure)
+                if if_figure.color != self.color:
+                    self.paths[t_y][t_x] = "0"
+                break
+            else:
+                self.paths[t_y][t_x] = "1"
+        for t_x in [self.x - 1, self.x + 1]:
+            t_y = self.y - 1 * direction
+            if_figure = Figure.check_for_figure((t_x, t_y))
+            if if_figure:
+                self.paths[t_y][t_x] = "2"
         return self.paths
 
 
@@ -100,6 +130,10 @@ for x_ in range(8):
 # print(Figure.figures[0].x)
 
 Figure.print_screen()
-while True:
-    Figure.choose_figure(tuple(map(int, input("Выберите фигуру >> ").split()))).move(tuple(map(int, (input("Введите новые координаты >> ")).split())))
-    Figure.print_screen()
+try:
+    while True:
+        Figure.choose_figure(tuple(map(int, input("Выберите фигуру >> ").split()))).move(tuple(map(int, (input("Введите новые координаты >> ")).split())))
+        Figure.print_screen()
+except:
+    for _ in Figure.figures:
+        print(_.x, _.y)
