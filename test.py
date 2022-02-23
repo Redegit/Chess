@@ -233,13 +233,7 @@ class King(Figure):
         return paths
 
 
-# fig = Figure("Figure", 1, 1, "Black")
-# fig.move(5, 5)
-# Figure.print_screen()
 figures = [[None]*8 for _ in range(8)]
-# p = Pawn("Pawn", 2, 3, "Black")
-# p.draw()
-# Figure.print_screen()
 for x_ in range(8):
     figures[1][x_] = Pawn("Pawn", x_, 1, "Black")
     figures[1][x_].draw()
@@ -268,16 +262,9 @@ figures[0][4] = King("King", 4, 0, "Black")
 figures[0][4].draw()
 figures[7][4] = King("King", 4, 7, "White")
 figures[7][4].draw()
-# Figure.print(p.possible_paths)
-# p.move(2, 0)
-# Figure.print_screen()
-# Figure.print(p.possible_paths)
-# print(Figure.figures)
-# print(Figure.figures[0].x)
+
 
 Figure.print_screen()
 while True:
     Figure.play()
-# except:
-#     for _ in Figure.figures:
-#         print(_.x, _.y)
+
