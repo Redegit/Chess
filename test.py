@@ -267,4 +267,3 @@ figures[7][4].draw()
 Figure.print_screen()
 while True:
     Figure.play()
-
