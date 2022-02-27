@@ -1,5 +1,6 @@
 # from tabulate import tabulate
-
+import pygame as pg
+import sys
 
 class Figure:
     screen = [['🙩']*8 for _ in range(8)]
@@ -21,7 +22,14 @@ class Figure:
 
     def draw(self):
         print(f"Drawing {self.color} {self.name} at {self.x, self.y}")
-        Figure.screen[self.y][self.x] = self.icon
+        # Figure.screen[self.y][self.x] = self.icon
+        font = pg.font.Font('CASEFONT.TTF', 72)
+        if self.icon[1] == 'b':
+            text1 = font.render(self.icon[0], True, (100, 100, 100))
+            sc.blit(text1, ((self.x+2)*70-12, (self.y+1)*70))
+        else:
+            text1 = font.render(self.icon[0], True, (200, 200, 200))
+            sc.blit(text1, ((self.x+2) * 69 - 3, (self.y) * 70+50))
 
     def move(self, coord):
         new_x, new_y = coord[0], coord[1]
@@ -29,7 +37,7 @@ class Figure:
         if path == "1" or path == "2":
             if self.possible_paths[new_y][new_x] == "2":
                 Figure.check_for_figure((new_x, new_y)).kill()
-            Figure.screen[self.y][self.x] = "🙩"
+
             print(f"Moving {self.color} {self.name} from {self.x, self.y} to {new_x, new_y}")
             self.x, self.y = new_x, new_y
             if type(self) == Pawn:
@@ -69,7 +77,7 @@ class Figure:
 
     @staticmethod
     def play():
-        figure = Figure.check_for_figure(tuple(map(int, input("Выберите фигуру >> ").split())))
+        figure = Figure.check_for_figure((pg.mouse.get_pos()[0]//69-2, pg.mouse.get_pos()[1]//70-1))
         if figure:
             if figure.color == Figure.turn:
                 if sum(sum(j == "0" for j in i) for i in figure.possible_paths) == 63:
@@ -77,7 +85,12 @@ class Figure:
                     Figure.print_screen()
                     return
                 Figure.print(figure.possible_paths)
-                figure.move(tuple(map(int, (input("Введите новые координаты >> ")).split())))
+                k = 0
+                while k != 1:
+                    for i in pg.event.get():
+                        if i.type == pg.MOUSEBUTTONDOWN:
+                            figure.move((pg.mouse.get_pos()[0]//69-2, pg.mouse.get_pos()[1]//70-1))
+                            k += 1
             else:
                 print(f"Сейчас ход {Figure.turn}")
             Figure.print_screen()
@@ -99,7 +112,7 @@ class Figure:
 class Pawn(Figure):  # пешка
     def __init__(self, name, x, y, color):
         super().__init__(name, x, y, color)
-        self.icon = "♙" if self.color == "White" else "♟"
+        self.icon = 'pw' if self.color == "White" else "pb"
 
     @property
     def possible_paths(self):
@@ -128,7 +141,7 @@ class Pawn(Figure):  # пешка
 class Rook(Figure):  # ладья
     def __init__(self, name, x, y, color):
         super().__init__(name, x, y, color)
-        self.icon = "♖" if self.color == "White" else "♜"
+        self.icon = "rw" if self.color == "White" else "rb"
 
     @property
     def possible_paths(self):
@@ -155,7 +168,7 @@ class Rook(Figure):  # ладья
 class Knight(Figure):  # конь
     def __init__(self, name, x, y, color):
         super().__init__(name, x, y, color)
-        self.icon = "♘" if self.color == "White" else "♞"
+        self.icon = "nw" if self.color == "White" else "nb"
 
     @property
     def possible_paths(self):
@@ -174,10 +187,10 @@ class Knight(Figure):  # конь
         return paths
 
 
-class Bishop(Figure):
+class Bishop(Figure): # слон
     def __init__(self, name, x, y, color):
         super().__init__(name, x, y, color)
-        self.icon = "♗" if self.color == "White" else "♝"
+        self.icon = "bw" if self.color == "White" else "bb"
 
     @property
     def possible_paths(self):
@@ -198,10 +211,10 @@ class Bishop(Figure):
         return paths
 
 
-class Queen(Figure):
+class Queen(Figure): # королева
     def __init__(self, name, x, y, color):
         super().__init__(name, x, y, color)
-        self.icon = "♕" if self.color == "White" else "♛"
+        self.icon = "qw" if self.color == "White" else "qb"
 
     @property
     def possible_paths(self):
@@ -212,10 +225,10 @@ class Queen(Figure):
         return paths
 
 
-class King(Figure):
+class King(Figure): # король
     def __init__(self, name, x, y, color):
         super().__init__(name, x, y, color)
-        self.icon = "♔" if self.color == "White" else "♚"
+        self.icon = "kw" if self.color == "White" else "kb"
 
     @property
     def possible_paths(self):
@@ -232,38 +245,91 @@ class King(Figure):
                     paths[y][x] = "1"
         return paths
 
+def update(figures, background, image):
+    sc.blit(background,(0, 0))
+    sc.blit(image, (100, 50))
+    for x in range(8):
+        for y in range(8):
+            if figures[x][y]:
+                figures[x][y].draw()
 
-figures = [[None]*8 for _ in range(8)]
-for x_ in range(8):
-    figures[1][x_] = Pawn("Pawn", x_, 1, "Black")
-    figures[1][x_].draw()
-    figures[6][x_] = Pawn("Pawn", x_, 6, "White")
-    figures[6][x_].draw()
-for x_ in [0, 7]:
-    figures[0][x_] = Rook("Rook", x_, 0, "Black")
-    figures[0][x_].draw()
-    figures[7][x_] = Rook("Rook", x_, 7, "White")
-    figures[7][x_].draw()
-for x_ in [1, 6]:
-    figures[0][x_] = Knight("Knight", x_, 0, "Black")
-    figures[0][x_].draw()
-    figures[7][x_] = Knight("Knight", x_, 7, "White")
-    figures[7][x_].draw()
-for x_ in [2, 5]:
-    figures[0][x_] = Bishop("Bishop", x_, 0, "Black")
-    figures[0][x_].draw()
-    figures[7][x_] = Bishop("Bishop", x_, 7, "White")
-    figures[7][x_].draw()
-figures[0][3] = Queen("Queen", 3, 0, "Black")
-figures[0][3].draw()
-figures[7][3] = Queen("Queen", 3, 7, "White")
-figures[7][3].draw()
-figures[0][4] = King("King", 4, 0, "Black")
-figures[0][4].draw()
-figures[7][4] = King("King", 4, 7, "White")
-figures[7][4].draw()
+#
 
+#
+# from test import Figure
+pg.font.init()
 
-Figure.print_screen()
+pg.display.set_caption("CHESS")
+clock = pg.time.Clock()
+
+background = pg.image.load('фон.jpg')
+
+font = pg.font.Font('CASEFONT.TTF', 72)
+sc = pg.display.set_mode((800, 700))
+sc.blit(background,(0, 0))
+image = pg.image.load('main.jpg')
+image = pg.transform.scale(image, (606, 600))
+sc.blit(image, (100, 50))
+pg.display.update()
+c = 0
+
 while True:
-    Figure.play()
+    for i in pg.event.get():
+        if c == 0:
+            figures = [[None] * 8 for _ in range(8)]
+            for x_ in range(8):
+                figures[1][x_] = Pawn("Pawn", x_, 1, "Black")
+                figures[1][x_].draw()
+                figures[6][x_] = Pawn("Pawn", x_, 6, "White")
+                figures[6][x_].draw()
+            for x_ in [0, 7]:
+                figures[0][x_] = Rook("Rook", x_, 0, "Black")
+                figures[0][x_].draw()
+                figures[7][x_] = Rook("Rook", x_, 7, "White")
+                figures[7][x_].draw()
+            for x_ in [1, 6]:
+                figures[0][x_] = Knight("Knight", x_, 0, "Black")
+                figures[0][x_].draw()
+                figures[7][x_] = Knight("Knight", x_, 7, "White")
+                figures[7][x_].draw()
+            for x_ in [2, 5]:
+                figures[0][x_] = Bishop("Bishop", x_, 0, "Black")
+                figures[0][x_].draw()
+                figures[7][x_] = Bishop("Bishop", x_, 7, "White")
+                figures[7][x_].draw()
+            figures[0][3] = Queen("Queen", 3, 0, "Black")
+            figures[0][3].draw()
+            figures[7][3] = Queen("Queen", 3, 7, "White")
+            figures[7][3].draw()
+            figures[0][4] = King("King", 4, 0, "Black")
+            figures[0][4].draw()
+            figures[7][4] = King("King", 4, 7, "White")
+            figures[7][4].draw()
+            print(figures[1][1].__dict__)
+            c += 1
+            pg.display.update()
+        if i.type == pg.QUIT:
+            sys.exit()
+        if i.type == pg.MOUSEBUTTONDOWN:
+            if 137 < pg.mouse.get_pos()[0] < 681 and 70 < pg.mouse.get_pos()[1] < 612:
+                new_x, new_y = pg.mouse.get_pos()[0]//69-2, pg.mouse.get_pos()[1]//70-1
+                Figure.play()
+                update(figures, background, image)
+                pg.display.update()
+            print(pg.mouse.get_pos())
+        pg.display.update()
+
+    clock.tick(10)
+
+
+
+
+
+
+
+
+
+
+
+
+
