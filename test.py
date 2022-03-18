@@ -2,7 +2,6 @@
 import pygame as pg
 import sys
 
-
 class Figure:
     screen = [['🙩']*8 for _ in range(8)]
     figures = []
@@ -54,7 +53,19 @@ class Figure:
             if type(self) == Pawn:
                 self.is_moved = True
             self.draw()
+            d_circle = pg.image.load('danger.png')
+            for figure in Figure.figures:
+                if figure.status == 'Alive':
+                    if figure.color == Figure.turn:
+                        for y in range(8):
+                            for x in range(8):
+                                if figure.possible_paths[x][y] == '2':
+                                    print("PRIVET")
+                                    sc.blit(d_circle, (x * 70 + 120, y * 70 + 70))
+                                    pg.display.update()
+
             Figure.turn = "Black" if Figure.turn == "White" else "White"
+
         else:
             print(f"Невозможно переместить {self.name} в эту точку")
 
@@ -90,20 +101,33 @@ class Figure:
 
     @staticmethod
     def play():
-        figure = Figure.check_for_figure((pg.mouse.get_pos()[0]//69-2, pg.mouse.get_pos()[1]//70-1))
+        figure = Figure.check_for_figure(((pg.mouse.get_pos()[0]-120)//70, (pg.mouse.get_pos()[1]-70)//70))
+
         if figure:
             if figure.color == Figure.turn:
                 if sum(sum(j == "0" for j in i) for i in figure.possible_paths) == 63:
                     print("Этой фигуре некуда идти")
                     # Figure.print_screen()
                     return
+                b_circle = pg.image.load('blue.png')
+                r_circle = pg.image.load('red.png')
+                for i in range(8):
+                    for j in range(8):
+                        if figure.possible_paths[i][j] == '1':
+                            sc.blit(b_circle, (j * 70 + 120, i * 70 + 70))
+                        if figure.possible_paths[i][j] == '2':
+                            sc.blit(r_circle, (j * 70 + 120, i * 70 + 70))
+                pg.display.update()
                 Figure.print(figure.possible_paths)
                 k = 0
                 while k != 1:
                     for i in pg.event.get():
                         if i.type == pg.MOUSEBUTTONDOWN:
-                            figure.move((pg.mouse.get_pos()[0]//69-2, pg.mouse.get_pos()[1]//70-1))
+                            figure.move(((pg.mouse.get_pos()[0]-120)//70, (pg.mouse.get_pos()[1]-70)//70))
                             k += 1
+                            update(figures, background, image)
+                            pg.display.update()
+
             else:
                 print(f"Сейчас ход {Figure.turn}")
             # Figure.print_screen()
@@ -351,9 +375,7 @@ while True:
                 new_x, new_y = (pg.mouse.get_pos()[0] - 120) // 70, (pg.mouse.get_pos()[1] - 70) // 70
                 print(new_x, new_y)
                 Figure.play()
-                update(figures, background, image)
-                pg.display.update()
+                # update(figures, background, image)
             print(pg.mouse.get_pos())
-        pg.display.update()
 
     clock.tick(10)
