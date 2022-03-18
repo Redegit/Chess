@@ -26,10 +26,10 @@ class Figure:
         font = pg.font.Font('CASEFONT.TTF', 72)
         if self.icon[1] == 'b':
             text1 = font.render(self.icon[0], True, (100, 100, 100))
-            sc.blit(text1, ((self.x+2)*70-12, (self.y+1)*70))
+            sc.blit(text1, ((self.x+2)*69-14, (self.y+1)*70-5))
         else:
-            text1 = font.render(self.icon[0], True, (200, 200, 200))
-            sc.blit(text1, ((self.x+2) * 69 - 3, (self.y) * 70+50))
+            text1 = font.render(self.icon[0], True, (150, 150, 150))
+            sc.blit(text1, ((self.x+2) * 69 - 14, (self.y) * 70+68))
 
     def move(self, coord):
         new_x, new_y = coord[0], coord[1]
@@ -72,6 +72,7 @@ class Figure:
         print()
 
     def kill(self):
+        global stat
         print(f"killing {self}")
         self.x, self.y = 8, 8
 
@@ -267,11 +268,20 @@ background = pg.image.load('фон.jpg')
 font = pg.font.Font('CASEFONT.TTF', 72)
 sc = pg.display.set_mode((800, 700))
 sc.blit(background,(0, 0))
-image = pg.image.load('main.jpg')
-image = pg.transform.scale(image, (606, 600))
+image = pg.image.load('main2.png')
+image = pg.transform.scale(image, (600, 600))
 sc.blit(image, (100, 50))
 pg.display.update()
 c = 0
+
+stat = {
+    'Pawn':0,
+    'Knight':0,
+    'Bishop':0,
+    'Rook':0,
+    'Queen':0,
+    'King':0
+}
 
 while True:
     for i in pg.event.get():
@@ -313,6 +323,7 @@ while True:
         if i.type == pg.MOUSEBUTTONDOWN:
             if 137 < pg.mouse.get_pos()[0] < 681 and 70 < pg.mouse.get_pos()[1] < 612:
                 new_x, new_y = pg.mouse.get_pos()[0]//69-2, pg.mouse.get_pos()[1]//70-1
+                print(new_x, new_y)
                 Figure.play()
                 update(figures, background, image)
                 pg.display.update()
