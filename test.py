@@ -2,9 +2,11 @@
 import pygame as pg
 import sys
 
+
 class Figure:
     screen = [['🙩']*8 for _ in range(8)]
     figures = []
+    kings = []
     turn = "White"
 
     def __init__(self, name, x, y, color):
@@ -14,6 +16,7 @@ class Figure:
         self.name = name
         self.color = color
         self.is_moved = False
+        self.status = "Alive"
         if self.name != "Non-existent":
             Figure.figures.append(self)
 
@@ -21,7 +24,7 @@ class Figure:
         return f"Объект класса {self.name}, координаты ({self.x}, {self.y})"
 
     def draw(self):
-        print(f"Drawing {self.color} {self.name} at {self.x, self.y}")
+        # print(f"Drawing {self.color} {self.name} at {self.x, self.y}")
         # Figure.screen[self.y][self.x] = self.icon
         font = pg.font.Font('CASEFONT.TTF', 72)
         if self.icon[1] == 'b':
@@ -36,9 +39,17 @@ class Figure:
         path = self.possible_paths[new_y][new_x]
         if path == "1" or path == "2":
             if self.possible_paths[new_y][new_x] == "2":
-                Figure.check_for_figure((new_x, new_y)).kill()
-
-            print(f"Moving {self.color} {self.name} from {self.x, self.y} to {new_x, new_y}")
+                Figure_to_kill = Figure.check_for_figure((new_x, new_y))
+                Figure_to_kill.kill()
+            temp_x, temp_y = self.x, self.y
+            self.x, self.y = new_x, new_y
+            for K in Figure.kings:
+                if K.color == self.color:
+                    if K.strike_check()[0]:
+                        print(f"Figure can't be placed here, {K.color} {K.name} is under attack!")
+                        self.x, self.y = temp_x, temp_y
+                        return
+            print(f"Moving {self.color} {self.name} from {temp_x, temp_x} to {new_x, new_y}")
             self.x, self.y = new_x, new_y
             if type(self) == Pawn:
                 self.is_moved = True
@@ -74,6 +85,7 @@ class Figure:
     def kill(self):
         global stat
         print(f"killing {self}")
+        self.status = "Killed"
         self.x, self.y = 8, 8
 
     @staticmethod
@@ -83,7 +95,7 @@ class Figure:
             if figure.color == Figure.turn:
                 if sum(sum(j == "0" for j in i) for i in figure.possible_paths) == 63:
                     print("Этой фигуре некуда идти")
-                    Figure.print_screen()
+                    # Figure.print_screen()
                     return
                 Figure.print(figure.possible_paths)
                 k = 0
@@ -94,7 +106,7 @@ class Figure:
                             k += 1
             else:
                 print(f"Сейчас ход {Figure.turn}")
-            Figure.print_screen()
+            # Figure.print_screen()
         else:
             print("there's no figure")
 
@@ -108,6 +120,17 @@ class Figure:
                 if path2[i][j] != "0":
                     new_path[i][j] = path2[i][j]
         return new_path
+
+    def strike_check(self):
+        threatening_figures = []
+        for figure in Figure.figures:
+            if figure.status == "Alive":
+                if (figure.color != self.color) and (figure.possible_paths[self.y][self.x] == "2"):
+                    threatening_figures.append(figure)
+        if threatening_figures:
+            return True, threatening_figures
+        else:
+            return False, []
 
 
 class Pawn(Figure):  # пешка
@@ -174,7 +197,7 @@ class Knight(Figure):  # конь
     @property
     def possible_paths(self):
         paths = [['0'] * 8 for _ in range(8)]
-        paths[self.y][self.x] = "K"
+        paths[self.y][self.x] = "N"
         directions = [(1, -2), (1, 2), (-1, -2), (-1, 2), (2, -1), (2, 1), (-2, -1), (-2, 1)]
         for x, y in directions:
             x, y = self.x + x, self.y + y
@@ -230,6 +253,8 @@ class King(Figure): # король
     def __init__(self, name, x, y, color):
         super().__init__(name, x, y, color)
         self.icon = "kw" if self.color == "White" else "kb"
+        if self.name != "Non-existent":
+            Figure.kings.append(self)
 
     @property
     def possible_paths(self):
@@ -245,6 +270,7 @@ class King(Figure): # король
                 else:
                     paths[y][x] = "1"
         return paths
+
 
 def update(figures, background, image):
     sc.blit(background,(0, 0))
@@ -331,16 +357,3 @@ while True:
         pg.display.update()
 
     clock.tick(10)
-
-
-
-
-
-
-
-
-
-
-
-
-
