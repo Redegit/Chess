@@ -29,10 +29,10 @@ class Figure:
         font = pg.font.Font('CASEFONT.TTF', 72)
         if self.icon[1] == 'b':
             text1 = font.render(self.icon[0], True, (100, 100, 100))
-            sc.blit(text1, ((self.x+2)*69-14, (self.y+1)*70-5))
+            sc.blit(text1, (120 + self.x * 70, 70 + self.y * 70))
         else:
             text1 = font.render(self.icon[0], True, (150, 150, 150))
-            sc.blit(text1, ((self.x+2) * 69 - 14, (self.y) * 70+68))
+            sc.blit(text1, (120 + self.x * 70, 70 + self.y * 70))
 
     def move(self, coord):
         new_x, new_y = coord[0], coord[1]
@@ -274,7 +274,7 @@ class King(Figure): # король
 
 def update(figures, background, image):
     sc.blit(background,(0, 0))
-    sc.blit(image, (100, 50))
+    sc.blit(image, (85, 35))
     for x in range(8):
         for y in range(8):
             if figures[x][y]:
@@ -294,9 +294,9 @@ background = pg.image.load('фон.jpg')
 font = pg.font.Font('CASEFONT.TTF', 72)
 sc = pg.display.set_mode((800, 700))
 sc.blit(background,(0, 0))
-image = pg.image.load('main2.png')
-image = pg.transform.scale(image, (600, 600))
-sc.blit(image, (100, 50))
+image = pg.image.load('main3.jpg')
+image = pg.transform.scale(image, (630, 630))
+sc.blit(image, (85, 35))
 pg.display.update()
 c = 0
 
@@ -345,10 +345,10 @@ while True:
             c += 1
             pg.display.update()
         if i.type == pg.QUIT:
-            sys.exit()
+            sys.exit() # (120 + self.x * 70, 70 + self.y * 70)
         if i.type == pg.MOUSEBUTTONDOWN:
-            if 137 < pg.mouse.get_pos()[0] < 681 and 70 < pg.mouse.get_pos()[1] < 612:
-                new_x, new_y = pg.mouse.get_pos()[0]//69-2, pg.mouse.get_pos()[1]//70-1
+            if 120 < pg.mouse.get_pos()[0] < 680 and 70 < pg.mouse.get_pos()[1] < 630:
+                new_x, new_y = (pg.mouse.get_pos()[0] - 120) // 70, (pg.mouse.get_pos()[1] - 70) // 70
                 print(new_x, new_y)
                 Figure.play()
                 update(figures, background, image)
