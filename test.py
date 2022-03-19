@@ -1,7 +1,6 @@
 # from tabulate import tabulate
 import pygame as pg
 import sys
-
 class Figure:
     screen = [['🙩']*8 for _ in range(8)]
     figures = []
@@ -53,16 +52,16 @@ class Figure:
             if type(self) == Pawn:
                 self.is_moved = True
             self.draw()
-            d_circle = pg.image.load('danger.png')
-            for figure in Figure.figures:
-                if figure.status == 'Alive':
-                    if figure.color == Figure.turn:
-                        for y in range(8):
-                            for x in range(8):
-                                if figure.possible_paths[x][y] == '2':
-                                    print("PRIVET")
-                                    sc.blit(d_circle, (x * 70 + 120, y * 70 + 70))
-                                    pg.display.update()
+            # d_circle = pg.image.load('danger.png')
+            # for figure in Figure.figures:
+            #     if figure.status == 'Alive':
+            #         if figure.color == Figure.turn:
+            #             for y in range(8):
+            #                 for x in range(8):
+            #                         if figure.possible_paths[x][y] == '2':
+            #                             pg.display.update()
+            #                             v = (y * 70 + 120, x * 70 + 70)
+            #                             sc.blit(d_circle, (y * 70 + 120, x * 70 + 70))
 
             Figure.turn = "Black" if Figure.turn == "White" else "White"
 
@@ -102,7 +101,6 @@ class Figure:
     @staticmethod
     def play():
         figure = Figure.check_for_figure(((pg.mouse.get_pos()[0]-120)//70, (pg.mouse.get_pos()[1]-70)//70))
-
         if figure:
             if figure.color == Figure.turn:
                 if sum(sum(j == "0" for j in i) for i in figure.possible_paths) == 63:
@@ -127,12 +125,20 @@ class Figure:
                             k += 1
                             update(figures, background, image)
                             pg.display.update()
-
             else:
                 print(f"Сейчас ход {Figure.turn}")
             # Figure.print_screen()
         else:
             print("there's no figure")
+        d_circle = pg.image.load('danger.png')
+        for figure in Figure.figures:
+            if figure.status == 'Alive':
+                if figure.color != Figure.turn:
+                    for y in range(8):
+                        for x in range(8):
+                            if figure.possible_paths[x][y] == '2':
+                                pg.display.update()
+                                sc.blit(d_circle, (y * 70 + 120, x * 70 + 70))
 
     @staticmethod
     def combine_paths(path1, path2):
