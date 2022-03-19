@@ -52,16 +52,6 @@ class Figure:
             if type(self) == Pawn:
                 self.is_moved = True
             self.draw()
-            # d_circle = pg.image.load('danger.png')
-            # for figure in Figure.figures:
-            #     if figure.status == 'Alive':
-            #         if figure.color == Figure.turn:
-            #             for y in range(8):
-            #                 for x in range(8):
-            #                         if figure.possible_paths[x][y] == '2':
-            #                             pg.display.update()
-            #                             v = (y * 70 + 120, x * 70 + 70)
-            #                             sc.blit(d_circle, (y * 70 + 120, x * 70 + 70))
 
             Figure.turn = "Black" if Figure.turn == "White" else "White"
 
@@ -137,8 +127,8 @@ class Figure:
                     for y in range(8):
                         for x in range(8):
                             if figure.possible_paths[x][y] == '2':
-                                pg.display.update()
                                 sc.blit(d_circle, (y * 70 + 120, x * 70 + 70))
+                                pg.display.update()
 
     @staticmethod
     def combine_paths(path1, path2):
