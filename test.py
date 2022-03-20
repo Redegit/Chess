@@ -33,6 +33,7 @@ class Figure:
             sc.blit(text1, (120 + self.x * 70, 70 + self.y * 70))
 
     def move(self, coord):
+        global counter
         new_x, new_y = coord[0], coord[1]
         path = self.possible_paths[new_y][new_x]
         if path == "1" or path == "2":
@@ -49,6 +50,7 @@ class Figure:
                         return
             print(f"Moving {self.color} {self.name} from {temp_x, temp_x} to {new_x, new_y}")
             self.x, self.y = new_x, new_y
+            counter += 1
             if type(self) == Pawn:
                 self.is_moved = True
             self.draw()
@@ -113,7 +115,7 @@ class Figure:
                         if i.type == pg.MOUSEBUTTONDOWN:
                             figure.move(((pg.mouse.get_pos()[0]-120)//70, (pg.mouse.get_pos()[1]-70)//70))
                             k += 1
-                            update(figures, background, image)
+                            update(figures, background, image, counter)
                             pg.display.update()
             else:
                 print(f"Сейчас ход {Figure.turn}")
@@ -292,9 +294,11 @@ class King(Figure): # король
         return paths
 
 
-def update(figures, background, image):
+def update(figures, background, image, counter):
+    text_counter = norm_font.render(str(counter), True, (200, 200, 200))
     sc.blit(background,(0, 0))
     sc.blit(image, (85, 35))
+    sc.blit(text_counter, (740, 50))
     for x in range(8):
         for y in range(8):
             if figures[x][y]:
@@ -312,6 +316,7 @@ clock = pg.time.Clock()
 background = pg.image.load('фон.jpg')
 
 font = pg.font.Font('CASEFONT.TTF', 72)
+norm_font = pg.font.Font('arial.ttf', 72)
 sc = pg.display.set_mode((800, 700))
 sc.blit(background,(0, 0))
 image = pg.image.load('main3.jpg')
@@ -319,6 +324,10 @@ image = pg.transform.scale(image, (630, 630))
 sc.blit(image, (85, 35))
 pg.display.update()
 c = 0
+counter = 0
+text_counter = norm_font.render(str(counter), True, (200, 200, 200))
+sc.blit(text_counter, (740, 50))
+
 
 stat = {
     'Pawn':0,
@@ -373,5 +382,4 @@ while True:
                 Figure.play()
                 # update(figures, background, image)
             print(pg.mouse.get_pos())
-
     clock.tick(10)
