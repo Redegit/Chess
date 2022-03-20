@@ -304,11 +304,9 @@ def update(figures, background, image, counter):
             if figures[x][y]:
                 figures[x][y].draw()
 
-#
 
-#
-# from test import Figure
 pg.font.init()
+turns = {}
 
 pg.display.set_caption("CHESS")
 clock = pg.time.Clock()
@@ -318,12 +316,13 @@ background = pg.image.load('фон.jpg')
 font = pg.font.Font('CASEFONT.TTF', 72)
 norm_font = pg.font.Font('arial.ttf', 72)
 sc = pg.display.set_mode((800, 700))
-sc.blit(background,(0, 0))
+sc.blit(background, (0, 0))
 image = pg.image.load('main3.jpg')
 image = pg.transform.scale(image, (630, 630))
 sc.blit(image, (85, 35))
 pg.display.update()
 c = 0
+# Счётчик ходов
 counter = 0
 text_counter = norm_font.render(str(counter), True, (200, 200, 200))
 sc.blit(text_counter, (740, 50))
