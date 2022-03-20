@@ -33,8 +33,7 @@ class Figure:
             sc.blit(text1, (120 + self.x * 70, 70 + self.y * 70))
 
     def move(self, coord):
-        global counter
-        global turns
+        global counter, turns, per, minus
         new_x, new_y = coord[0], coord[1]
         s = self.icon[0]
         sep = '-'
@@ -61,7 +60,12 @@ class Figure:
             if type(self) == Pawn:
                 self.is_moved = True
             self.draw()
-            turns[counter] = s + chr(coords[0] + 97) + str(8 - coords[1]) + sep + chr(new_x + 97) + str(8 - new_y) + end
+            if counter % 2 != 0:
+                # turns[counter] = s + chr(coords[0] + 97) + str(8 - coords[1]) + sep + chr(new_x + 97) + str(8 - new_y) + end
+                per = s + chr(coords[0] + 97) + str(8 - coords[1]) + sep + chr(new_x + 97) + str(8 - new_y) + end
+            else:
+                minus += 1
+                turns[counter-minus] = per + ' ' + s + chr(coords[0] + 97) + str(8 - coords[1]) + sep + chr(new_x + 97) + str(8 - new_y) + end
 
             Figure.turn = "Black" if Figure.turn == "White" else "White"
 
@@ -323,6 +327,7 @@ clock = pg.time.Clock()
 
 background = pg.image.load('фон.jpg')
 
+
 font = pg.font.Font('CASEFONT.TTF', 72)
 norm_font = pg.font.Font('arial.ttf', 72)
 sc = pg.display.set_mode((800, 700))
@@ -332,6 +337,7 @@ image = pg.transform.scale(image, (630, 630))
 sc.blit(image, (85, 35))
 pg.display.update()
 c = 0
+minus = 0
 # Счётчик ходов
 counter = 0
 text_counter = norm_font.render(str(counter), True, (200, 200, 200))
