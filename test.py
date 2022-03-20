@@ -34,19 +34,26 @@ class Figure:
 
     def move(self, coord):
         global counter
+        global turns
         new_x, new_y = coord[0], coord[1]
+        s = self.icon[0]
+        sep = '-'
+        end = ''
         path = self.possible_paths[new_y][new_x]
         if path == "1" or path == "2":
             if self.possible_paths[new_y][new_x] == "2":
                 Figure_to_kill = Figure.check_for_figure((new_x, new_y))
                 Figure_to_kill.kill()
+                sep = ':'
             temp_x, temp_y = self.x, self.y
             self.x, self.y = new_x, new_y
             for K in Figure.kings:
                 if K.color == self.color:
                     if K.strike_check()[0]:
+                        end = '+'
                         print(f"Figure can't be placed here, {K.color} {K.name} is under attack!")
                         self.x, self.y = temp_x, temp_y
+                        turns[counter] = s + chr(coords[0] + 97) + str(8 - coords[1]) + sep + chr(new_x + 97) + str(8 - new_y) + end
                         return
             print(f"Moving {self.color} {self.name} from {temp_x, temp_x} to {new_x, new_y}")
             self.x, self.y = new_x, new_y
@@ -54,6 +61,7 @@ class Figure:
             if type(self) == Pawn:
                 self.is_moved = True
             self.draw()
+            turns[counter] = s + chr(coords[0] + 97) + str(8 - coords[1]) + sep + chr(new_x + 97) + str(8 - new_y) + end
 
             Figure.turn = "Black" if Figure.turn == "White" else "White"
 
@@ -92,8 +100,10 @@ class Figure:
 
     @staticmethod
     def play():
+        global coords
         figure = Figure.check_for_figure(((pg.mouse.get_pos()[0]-120)//70, (pg.mouse.get_pos()[1]-70)//70))
         if figure:
+            coords = ((pg.mouse.get_pos()[0]-120)//70, (pg.mouse.get_pos()[1]-70)//70)
             if figure.color == Figure.turn:
                 if sum(sum(j == "0" for j in i) for i in figure.possible_paths) == 63:
                     print("Этой фигуре некуда идти")
@@ -382,3 +392,9 @@ while True:
                 # update(figures, background, image)
             print(pg.mouse.get_pos())
     clock.tick(10)
+
+    with open('result.txt', mode = 'w') as file:
+        for i in turns.items():
+            file.write(str(i[0])+ ' ' + i[1] + '\n')
+
+
