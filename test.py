@@ -405,12 +405,12 @@ sc.blit(text_counter, (740, 50))
 
 
 stat = {
-    'Pawn':0,
-    'Knight':0,
-    'Bishop':0,
-    'Rook':0,
-    'Queen':0,
-    'King':0
+    'Pawn': 0,
+    'Knight': 0,
+    'Bishop': 0,
+    'Rook': 0,
+    'Queen': 0,
+    'King': 0
 }
 
 while True:
