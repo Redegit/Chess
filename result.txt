@@ -1,3 +1,2 @@
-1 pe2-e4 pf7-f5
-2 qd1-h5 pg7-g6
-3 qh5:g6 ph7:g6
+1 pe2-e4 pd7-d5
+2 qd1-g4 qd8-d7
