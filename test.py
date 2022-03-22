@@ -30,17 +30,16 @@ class Figure:
         icon = self.icon[1]
         text1 = font.render(icon, True, (26, 13, 0))
         sc.blit(text1, (120 + self.x * 70, 70 + self.y * 70))
-        print(f"Whoa! New {self} just appeared!")
 
     def move(self, coord):
         paths = self.paths
-        global counter, turns, per, minus
+        global counter, turns, per, ko
         new_x, new_y = coord[0], coord[1]
         path = paths[new_y][new_x]
         s = self.icon[0]
         sep = '-'
         end = ''
-        path = self.possible_paths[new_y][new_x]
+        # path = self.possible_paths[new_y][new_x]
         if path in ["1", "2", "3", "4"]:
             if path == "2":
                 Figure_to_kill = Figure.check_for_figure((new_x, new_y))
@@ -56,15 +55,6 @@ class Figure:
                 Figure_to_kill.kill()
             temp_x, temp_y = self.x, self.y
             self.x, self.y = new_x, new_y
-            for K in Figure.kings:  # _______________________лишнее, теперь шах проверяется отдельной функцией__________
-                if K.color == self.color:
-                    if K.strike_check()[0]:
-                        end = '+'
-                        print(f"Figure can't be placed here, {K.color} {K.name} is under attack!")
-                        self.x, self.y = temp_x, temp_y
-                        turns[counter] = s + chr(coords[0] + 97) + str(8 - coords[1]) + sep + chr(new_x + 97) + str(
-                            8 - new_y) + end
-                        return  # ______________________________________________________________________________________
             print(f"Moving {self.color} {self.name} from {temp_x, temp_x} to {new_x, new_y}")
             self.x, self.y = new_x, new_y
             counter += 1
@@ -75,13 +65,29 @@ class Figure:
                     self.step += 1
                     if self.y in [0, 7]:  # _______________________замена пешки на другую фигуру________________________
                         self.promotion()
+            if self.enemy_king.strike_check()[0]:
+                end = '+' * len(self.enemy_king.strike_check()[1])
+                print('AAAAAAAAAAAAAAAAAA')
             if counter % 2 != 0:
-                # turns[counter] = s + chr(coords[0] + 97) + str(8 - coords[1]) + sep + chr(new_x + 97) + str(8 - new_y) + end
-                per = s + chr(coords[0] + 97) + str(8 - coords[1]) + sep + chr(new_x + 97) + str(8 - new_y) + end
+                if path == '3':
+                    if new_x == 2:
+                        per = '0-0-0'
+                    else:
+                        per = '0-0'
+                else:
+                    per = s + chr(coords[0] + 97) + str(8 - coords[1]) + sep + chr(new_x + 97) + str(8 - new_y) + end
+                per_2 = ''
+                turns[ko] = per
             else:
-                minus += 1
-                turns[counter - minus] = per + ' ' + s + chr(coords[0] + 97) + str(8 - coords[1]) + sep + chr(
-                    new_x + 97) + str(8 - new_y) + end
+                if path == '3':
+                    if new_x == 2:
+                        per_2 = '0-0-0'
+                    else:
+                        per_2 = '0-0'
+                else:
+                    per_2 = s + chr(coords[0] + 97) + str(8 - coords[1]) + sep + chr(new_x + 97) + str(8 - new_y) + end
+                turns[ko] = per + ' ' + per_2
+                ko += 1
             Figure.turn = "Black" if Figure.turn == "White" else "White"
         else:
             print(f"Невозможно переместить {self.name} в эту точку")
@@ -179,6 +185,7 @@ class Figure:
             if Figure.checkmate():
                 ch = f"Checkmate, {'Black' if Figure.turn == 'White' else 'White'} wins!"
                 checkmate_str = norm_font.render(ch, True, (230, 0, 0))
+                turns[counter//2+1] = turns[counter//2+1] + '#'
                 sc.blit(checkmate_str, (0, 320))
             for enemy in Figure.figures:
                 if enemy.status == 'Alive':
@@ -479,7 +486,7 @@ def update(figures, background, image, counter):
     text_counter = norm_font.render(str(counter), True, (200, 200, 200))
     sc.blit(background, (0, 0))
     sc.blit(image, (85, 35))
-    sc.blit(text_counter, (740, 50))
+    sc.blit(text_counter, (720, 50))
     for i in figures:
         for j in i:
             if j != "0":
@@ -496,7 +503,7 @@ clock = pg.time.Clock()
 background = pg.image.load('wood.jpg')
 
 font = pg.font.Font('CASEFONT.TTF', 72)
-norm_font = pg.font.Font('arial.ttf', 72)
+norm_font = pg.font.Font('arial.ttf', 68)
 sc = pg.display.set_mode((800, 700))
 sc.blit(background, (0, 0))
 image = pg.image.load('main5.jpg')
@@ -504,11 +511,11 @@ image = pg.transform.scale(image, (630, 630))
 sc.blit(image, (85, 35))
 pg.display.update()
 c = 0
-minus = 0
+ko = 1
 # Счётчик ходов
 counter = 0
 text_counter = norm_font.render(str(counter), True, (200, 200, 200))
-sc.blit(text_counter, (740, 50))
+sc.blit(text_counter, (720, 50))
 
 stat = {
     'Pawn': 0,
