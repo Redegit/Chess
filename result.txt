@@ -1,9 +1,0 @@
-1 ph2-h4 pa7-a6
-2 pe2-e4 ra8-a7
-3 qd1-h5 ra7-a8
-4 qh5:h7 ra8-a7
-5 qh7:h8 ra7-a8
-6 qh8:g7 ra8-a7
-7 ph4-h5 ra7-a8
-8 ph5-h6 ra8-a7
-9 ph6-h7 ra7-a8

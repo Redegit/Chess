@@ -1,0 +1,4 @@
+1 pe2-e4 pe7-e5
+2 bf1-c4 pa7-a6
+3 qd1-h5 pb7-b5
+4 qh5:f7+#
