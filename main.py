@@ -191,7 +191,7 @@ class Figure:
             K = figure.enemy_king
             king_check = K.strike_check()[0]
             if Figure.checkmate():
-                print("checkmate")
+                # print("checkmate")
                 ch = f"Checkmate, {'Black' if Figure.turn == 'White' else 'White'} wins!"
                 checkmate_str = norm_font.render(ch, True, (255, 255, 255))
                 turns[counter//2+1] = turns[counter//2+1] + '#'
@@ -204,7 +204,7 @@ class Figure:
             elif king_check:
                 sc.blit(check, (K.x * 70 + 120, K.y * 70 + 105))
             else:
-                print("not checkmate")
+                # print("not checkmate")
                 for enemy in Figure.figures:
                     if enemy.status == 'Alive':
                         if enemy.color != Figure.turn:
