@@ -45,16 +45,15 @@ class Figure:
                 Figure_to_kill = Figure.check_for_figure((new_x, new_y))
                 Figure_to_kill.kill()
                 sep = ':'
-            if path == "3":  # ___________________________заметь меня__________________________     :)
-                # прикрутить к записи ходов !!!______________________рокировка_____________________!!!
+            if path == "3":
+                # рокировка
                 rook = Figure.check_for_figure((0 if new_x == 2 else 7, self.y))
                 rook.x = (self.x + new_x) // 2
                 rook.draw()
-            if path == "4":  # ___________________________________взятие на проходе_____________________________________
-                Figure_to_kill = Figure.check_for_figure((new_x, self.y))  # ________тоже добавить в запись игры________
+            if path == "4":  # взятие на проходе
+                Figure_to_kill = Figure.check_for_figure((new_x, self.y))  # тоже добавить в запись игры
                 Figure_to_kill.kill()
             self.x, self.y = new_x, new_y
-            # print(f"Moving {self.color} {self.name} from {temp_x, temp_x} to {new_x, new_y}")
             self.x, self.y = new_x, new_y
             counter += 1
             self.draw()
@@ -62,7 +61,7 @@ class Figure:
                 self.is_moved = True
                 if type(self) == Pawn:
                     self.step += 1
-                    if self.y in [0, 7]:  # _______________________замена пешки на другую фигуру________________________
+                    if self.y in [0, 7]:  # замена пешки на другую фигуру
                         self.promotion()
             if self.enemy_king.strike_check()[0]:
                 end = '+' * len(self.enemy_king.strike_check()[1])
@@ -74,7 +73,6 @@ class Figure:
                         per = '0-0'
                 else:
                     per = s + chr(coords[0] + 97) + str(8 - coords[1]) + sep + chr(new_x + 97) + str(8 - new_y) + end
-                per_2 = ''
                 turns[ko] = per
             else:
                 if path == '3':
@@ -88,7 +86,6 @@ class Figure:
                 ko += 1
             Figure.turn = "Black" if Figure.turn == "White" else "White"
         else:
-            # print(f"Невозможно переместить {self.name} в эту точку")
             pass
 
     def promotion(self):  # замена пешки на другую фигуру
@@ -110,7 +107,6 @@ class Figure:
         figures[0][-1].draw()
         update(figures, background, image, counter)
         pg.display.update()
-        # print(f"That's a {str(figures[0][-1])}")
 
     @classmethod
     def print_screen(cls):
@@ -134,7 +130,6 @@ class Figure:
 
     def kill(self):
         global stat
-        # print(f"killing {self}")
         self.status = "Killed"
         self.x, self.y = 8, 8
 
@@ -147,7 +142,6 @@ class Figure:
             if figure.color == Figure.turn:
                 paths = figure.paths
                 if sum(sum(j == "0" for j in i) for i in paths) == 63:
-                    # print("Этой фигуре некуда идти")
                     return
                 highlight = pg.image.load("lib/highlight.png")
                 sc.blit(highlight, (coords[0] * 70 + 120, coords[1] * 70 + 70))
@@ -167,8 +161,6 @@ class Figure:
                         elif paths[i][j] == '4':
                             sc.blit(in_passing, (j * 70 + 120, i * 70 + 70))
                 pg.display.update()
-                # print(figure)
-                # Figure.print(paths)
                 k = 0
                 while k != 1:
                     for i in pg.event.get():
@@ -178,10 +170,8 @@ class Figure:
                             update(figures, background, image, counter)
                             pg.display.update()
             else:
-                # print(f"Сейчас ход {Figure.turn}")
                 pass
         else:
-            # print("there's no figure")
             pass
         d_circle = pg.image.load('lib/danger_filled.png')
         d_circle = pg.transform.scale(d_circle, (35, 35))
@@ -191,7 +181,6 @@ class Figure:
             K = figure.enemy_king
             king_check = K.strike_check()[0]
             if Figure.checkmate():
-                # print("checkmate")
                 ch = f"Checkmate, {'Black' if Figure.turn == 'White' else 'White'} wins!"
                 checkmate_str = norm_font.render(ch, True, (255, 255, 255))
                 turns[counter//2+1] = turns[counter//2+1] + '#'
@@ -204,7 +193,6 @@ class Figure:
             elif king_check:
                 sc.blit(check, (K.x * 70 + 120, K.y * 70 + 105))
             else:
-                # print("not checkmate")
                 for enemy in Figure.figures:
                     if enemy.status == 'Alive':
                         if enemy.color != Figure.turn:
@@ -240,7 +228,6 @@ class Figure:
         for figure in Figure.figures:
             if figure.status == "Alive":
                 if figure.color != self.color:
-                    # print(figure.x, figure.y, figure.status, self.x, self.y, figure.possible_paths)
                     if figure.possible_paths[self.y][self.x] == "2":
                         threatening_figures.append(figure)
         if threatening_figures:
@@ -274,7 +261,6 @@ class Figure:
 
     def passing_check(self, x, y):
         enemy_x, enemy_y = x, self.y
-        # print("enemy coord", enemy_x, enemy_y)
         to_kill = Figure.check_for_figure((enemy_x, enemy_y))
         if to_kill.name == 'King':
             return '0'
@@ -337,7 +323,6 @@ class Pawn(Figure):  # пешка
 
     @property
     def possible_paths(self):
-        # print(f'paths {self}')
         paths = [['0'] * 8 for _ in range(8)]
         paths[self.y][self.x] = "P"
         direction = 1 if self.color == "White" else -1
@@ -355,7 +340,6 @@ class Pawn(Figure):  # пешка
             t_y = self.y - 1 * direction
             if_figure = Figure.check_for_figure((t_x, t_y))
             if if_figure:
-                # print(if_figure)
                 if if_figure.color != self.color:
                     paths[t_y][t_x] = '2'
         if (self.y, self.color) == (3, "White") or (self.y, self.color) == (4, "Black"):
@@ -549,8 +533,6 @@ if __name__ == "__main__":
     ko = 1
     # Счётчик ходов
     counter = 0
-    # text_counter = norm_font.render(str(counter), True, (200, 200, 200))
-    # sc.blit(text_counter, (720, 50))
 
 
     stat = {
@@ -594,7 +576,6 @@ if __name__ == "__main__":
                 figures[0][4].draw()
                 figures[7][4] = King("King", 4, 7, "White")
                 figures[7][4].draw()
-                # print(figures[1][1].__dict__)
                 c += 1
                 update(figures, background, image, counter)
                 pg.display.update()
@@ -603,10 +584,7 @@ if __name__ == "__main__":
             if i.type == pg.MOUSEBUTTONDOWN:
                 if 120 < pg.mouse.get_pos()[0] < 680 and 70 < pg.mouse.get_pos()[1] < 630:
                     new_x, new_y = (pg.mouse.get_pos()[0] - 120) // 70, (pg.mouse.get_pos()[1] - 70) // 70
-                    # print(new_x, new_y)
                     Figure.play()
-                    # update(figures, background, image)
-                # print(pg.mouse.get_pos())
         clock.tick(10)
 
         with open('notation.txt', mode='w') as file:
